@@ -9,6 +9,7 @@ import {
   useGetVegetablesQuery,
   useUpdateVegetableMutation,
 } from 'app/api';
+import { ProductTypeEnum } from 'types/Product';
 
 export const Vegetables = () => {
   const [selectedVegetable, setSelectedVegetable] = useState<Vegetable | null>(
@@ -92,7 +93,7 @@ export const Vegetables = () => {
       )}
       <ProductPage
         data={vegetables || []}
-        productType="vegetable"
+        productType={ProductTypeEnum.vegetable}
         handleAdd={handleAddVegetables}
         handleUpdate={handleUpdateVegetable}
         handleDelete={confirmDelete}

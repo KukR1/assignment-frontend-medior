@@ -7,11 +7,12 @@ import PrimaryButton from 'components/assets/PrimaryButton/PrimaryButton';
 import { getTagName } from 'helpers/tagNameId';
 import { useState } from 'react';
 import { Fruit } from 'types/Fruit';
+import { ProductTypeEnum } from 'types/Product';
 import { Vegetable } from 'types/Vegetable';
 
 interface ProductPageProps {
   data: (Fruit | Vegetable)[];
-  productType: 'fruit' | 'vegetable';
+  productType: ProductTypeEnum;
   handleAdd: (product: Omit<Fruit, 'id'> | Omit<Vegetable, 'id'>) => void;
   handleUpdate: (product: Omit<Fruit, 'id'> | Omit<Vegetable, 'id'>) => void;
   handleDelete: (productId: string) => void;
@@ -129,7 +130,7 @@ export const ProductPage = ({
         </div>
       </Modal>
       <ProductModal
-        productType="fruit"
+        productType={productType}
         product={selectedProduct}
         isOpen={!!selectedProduct}
         onClose={closeModal}

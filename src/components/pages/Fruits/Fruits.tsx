@@ -9,7 +9,7 @@ import { ClipLoader } from 'react-spinners';
 import { LoadWrapper } from 'styles/common/helpers/loaders';
 import { Fruit } from 'types/Fruit';
 import { ProductPage } from '../ProductPage/ProductPage';
-import { Vegetable } from 'types/Vegetable';
+import { ProductTypeEnum } from 'types/Product';
 
 export const Fruits = () => {
   const [selectedFruit, setSelectedFruit] = useState<Fruit | null>(null);
@@ -80,7 +80,7 @@ export const Fruits = () => {
       )}
       <ProductPage
         data={fruits || []}
-        productType={'fruit'}
+        productType={ProductTypeEnum.fruit}
         handleAdd={handleAddFruit}
         handleUpdate={handleUpdateFruit}
         handleDelete={confirmDelete}
