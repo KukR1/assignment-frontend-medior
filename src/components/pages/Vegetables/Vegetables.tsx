@@ -1,180 +1,109 @@
+import { useEffect, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
+import { LoadWrapper } from 'styles/common/helpers/loaders';
+import { ProductPage } from '../ProductPage/ProductPage';
+import { Vegetable } from 'types/Vegetable';
 import {
   useAddVegetableMutation,
   useDeleteVegetableMutation,
   useGetVegetablesQuery,
   useUpdateVegetableMutation,
 } from 'app/api';
-import AdminLayout from 'components/Layouts/AdminLayout';
-import { ProductModal } from 'components/ProductModal/ProductModal';
-import { SearchInput } from 'components/SearchInput/SearchInput';
-import { Table } from 'components/Table/Table';
-import { Modal } from 'components/assets/Modal/Modal';
-import PrimaryButton from 'components/assets/PrimaryButton/PrimaryButton';
-import { getTagName } from 'helpers/tagNameId';
-import { useEffect, useState } from 'react';
-import { ClipLoader } from 'react-spinners';
-import { LoadWrapper } from 'styles/common/helpers/loaders';
-import { Vegetable } from 'types/Vegetable';
 
 export const Vegetables = () => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedVegie, setSelectedVegie] = useState<Vegetable | null>(null);
+  const [selectedVegetable, setSelectedVegetable] = useState<Vegetable | null>(
+    null
+  );
   const [isAdding, setIsAdding] = useState(false);
-  const [deletingVegieId, setDeletingVegieId] = useState<string | null>(null);
-
-  const [isLoading, setIsLoading] = useState(false);
+  const [deletingVegetableId, setDeletingVegetableId] = useState<string | null>(
+    null
+  );
 
   const { data: vegetables, isFetching } = useGetVegetablesQuery();
-  const [updateVegetable, { isLoading: isUpdatingVegie }] =
+  const [updateVegetables, { isLoading: isUpdatingVegetables }] =
     useUpdateVegetableMutation();
-  const [addVegie, { isLoading: isAddingVegie }] = useAddVegetableMutation();
-  const [deleteVegie, { isLoading: isDeleting }] = useDeleteVegetableMutation();
+  const [addVegetables, { isLoading: isAddingVegetables }] =
+    useAddVegetableMutation();
+  const [deleteVegetables, { isLoading: isDeleting }] =
+    useDeleteVegetableMutation();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(isAddingVegie || isUpdatingVegie || isDeleting || isFetching);
-  }, [isAddingVegie, isUpdatingVegie, isDeleting, isFetching]);
-
-  const filteredVegies =
-    vegetables &&
-    vegetables.filter((vegies) =>
-      [vegies.name, vegies.description, ...(vegies.tags || []).map(getTagName)]
-        .join(' ')
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+    setIsLoading(
+      isAddingVegetables || isUpdatingVegetables || isDeleting || isFetching
     );
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleEditVegie = (vegie: Vegetable) => {
-    setSelectedVegie(vegie);
-  };
+    closeModal();
+  }, [isAddingVegetables, isUpdatingVegetables, isDeleting, isFetching]);
 
   const closeModal = () => {
-    setSelectedVegie(null);
+    setSelectedVegetable(null);
     setIsAdding(false);
   };
 
-  const handleUpdateVegie = async (updatedVegie: Omit<Vegetable, 'id'>) => {
-    if (!selectedVegie) {
-      console.error('No selected vegetable to update');
+  const handleUpdateVegetable = async (
+    updatedVegetables: Omit<Vegetable, 'id'>
+  ) => {
+    if (!selectedVegetable) {
+      console.error('No selected Vegetables to update');
       return;
     }
 
     try {
-      await updateVegetable({ ...updatedVegie, id: selectedVegie.id });
-      closeModal();
+      await updateVegetables({
+        ...updatedVegetables,
+        id: selectedVegetable.id,
+      });
     } catch (error) {
-      console.error(`Failed to update vegetable with error:`, error);
+      console.error(
+        `Failed to update ${selectedVegetable.name} with error:`,
+        error
+      );
     }
   };
 
-  const handleAddProduct = () => {
-    setSelectedVegie(null);
-    setIsAdding(true);
-  };
-
-  const handleAddVegie = async (newVegie: Omit<Vegetable, 'id'>) => {
+  const handleAddVegetables = async (newVegetable: Omit<Vegetable, 'id'>) => {
     try {
-      await addVegie(newVegie);
-      closeModal();
+      await addVegetables(newVegetable);
       setIsAdding(false);
     } catch (error) {
-      console.error(`Failed to add new vegetable with error:`, error);
+      console.error(`Failed to add ${newVegetable.name} with error:`, error);
     }
   };
 
-  const handleDelete = (vegieId: string) => {
-    setDeletingVegieId(vegieId);
-  };
-
-  const confirmDelete = async (vegieId: string) => {
-    if (deletingVegieId) {
+  const confirmDelete = async () => {
+    if (deletingVegetableId)
       try {
-        await deleteVegie(deletingVegieId);
-        setDeletingVegieId('');
+        await deleteVegetables(deletingVegetableId);
+        setDeletingVegetableId(null);
       } catch (error) {
         console.error(
-          `Failed to delete vegie with id ${deletingVegieId} with error:`,
+          `Failed to delete Vegetables with id ${deletingVegetableId} with error:`,
           error
         );
       }
-    }
   };
 
-  const deletingVegie =
-    vegetables &&
-    vegetables.find((vegie: Vegetable) => vegie.id === deletingVegieId);
-
   return (
-    <AdminLayout>
-      <div className="buttons-wrapper">
-        <SearchInput size="15rem" onChange={handleChange} />
-        <div className="buttons">
-          <PrimaryButton
-            type="button"
-            variant="success"
-            onClick={handleAddProduct}
-          >
-            Add Product
-          </PrimaryButton>
-        </div>
-      </div>
-      <Table
-        data={filteredVegies || []}
-        handleEdit={handleEditVegie}
-        handleDelete={handleDelete}
-      />
-      {isLoading ? (
+    <>
+      {isLoading && (
         <LoadWrapper>
           <ClipLoader size={200} color="blue" />
         </LoadWrapper>
-      ) : (
-        <>
-          <ProductModal
-            productType="vegetable"
-            product={null}
-            isOpen={isAdding}
-            onClose={closeModal}
-            onSubmit={handleAddVegie}
-          />
-          <Modal
-            title={`Deleting ${deletingVegie?.name}`}
-            isOpen={!!deletingVegieId}
-            onClose={() => setDeletingVegieId(null)}
-          >
-            <p>Are you sure you want to delete this fruit?</p>
-            <div className="delete-btn-wrapper">
-              <PrimaryButton
-                type="submit"
-                variant="danger"
-                onClick={() => {
-                  if (deletingVegieId) {
-                    confirmDelete(deletingVegieId);
-                  }
-                }}
-              >
-                Yes, delete
-              </PrimaryButton>
-              <PrimaryButton
-                type="button"
-                variant="primary"
-                onClick={() => setDeletingVegieId(null)}
-              >
-                No, cancel
-              </PrimaryButton>
-            </div>
-          </Modal>
-          <ProductModal
-            productType="vegetable"
-            product={selectedVegie}
-            isOpen={!!selectedVegie}
-            onClose={closeModal}
-            onSubmit={handleUpdateVegie}
-          />
-        </>
       )}
-    </AdminLayout>
+      <ProductPage
+        data={vegetables || []}
+        productType="vegetable"
+        handleAdd={handleAddVegetables}
+        handleUpdate={handleUpdateVegetable}
+        handleDelete={confirmDelete}
+        selectedProduct={selectedVegetable}
+        setSelectedProduct={setSelectedVegetable}
+        isAdding={isAdding}
+        setIsAdding={setIsAdding}
+        setDeletingProductId={setDeletingVegetableId}
+        deletingProductId={deletingVegetableId}
+        closeModal={closeModal}
+      />
+    </>
   );
 };
