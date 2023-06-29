@@ -58,7 +58,7 @@ export const ProductPage = ({
     setSearchTerm(event.target.value);
   };
 
-  const handleEditFruit = (product: Fruit | Vegetable) => {
+  const handleEditProduct = (product: Fruit | Vegetable) => {
     setSelectedProduct(product);
   };
 
@@ -91,7 +91,7 @@ export const ProductPage = ({
       </div>
       <Table
         data={filteredData || []}
-        handleEdit={handleEditFruit}
+        handleEdit={handleEditProduct}
         handleDelete={handleProductId}
       />
       <ProductModal
