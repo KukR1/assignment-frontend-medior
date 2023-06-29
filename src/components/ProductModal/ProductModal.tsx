@@ -72,13 +72,11 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     event.preventDefault();
 
     if (product) {
-      // If a product was provided, we're updating
       onSubmit({
         ...product,
         ...formData,
       });
     } else {
-      // Otherwise, we're creating a new product
       onSubmit(formData);
     }
     setFormData({
